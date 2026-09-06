@@ -11,7 +11,8 @@ def health():
     return {
         "status": "healthy",
         "application": "student-ml-api",
-        "version": "1.0.0"
+        "application_version": "1.1.0",
+        "model_version": "model-1"
     }
 
 @app.post("/predict")
