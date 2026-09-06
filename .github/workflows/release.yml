@@ -31,11 +31,13 @@ jobs:
         run: |
           pytest
 
-      - name: Extract Semantic Version and Commit SHA
+      - name: Extract Semantic Version, Lowercase Repo, and Commit SHA
         id: meta
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
+          REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "repo_lower=${REPO_LOWER}" >> "$GITHUB_OUTPUT"
           echo "short_sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
           echo "build_date=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_OUTPUT"
 
@@ -52,9 +54,9 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/student-ml-api:${{ steps.meta.outputs.version }}
-            ghcr.io/${{ github.repository_owner }}/student-ml-api:latest
-            ghcr.io/${{ github.repository_owner }}/student-ml-api:${{ steps.meta.outputs.short_sha }}
+            ghcr.io/${{ steps.meta.outputs.repo_lower }}:${{ steps.meta.outputs.version }}
+            ghcr.io/${{ steps.meta.outputs.repo_lower }}:latest
+            ghcr.io/${{ steps.meta.outputs.repo_lower }}:${{ steps.meta.outputs.short_sha }}
           labels: |
             org.opencontainers.image.version=${{ steps.meta.outputs.version }}
             org.opencontainers.image.revision=${{ github.sha }}
